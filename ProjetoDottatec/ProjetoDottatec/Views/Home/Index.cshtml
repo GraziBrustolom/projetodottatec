@@ -1,31 +1,164 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿﻿<div class="container" ng-controller="usuarioCtrl">
+    @* Panel Info *@
+     <div class="panel panel-info">
+         <div class="panel-heading">Usuários</div>
+         <div class="panel-body">
 
-<div class="jumbotron">
-    <h1>Pub 3</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+             <button type="button" data-target="#AdicionarUsuario" data-toggle="modal" class="btn btn-info add-new"><span class="glyphicon glyphicon-user"></span><i class="fa fa-plus"></i>    Novo Usuário</button>
+         </div>
+         <table class="table table-bordered">
+             <thead>
+                 <tr>
+                     <th class="text-center">Nome</th>
+                     <th class="text-center">CPF</th>
+                     <th class="text-center">Email</th>
+                     <th class="text-center">Senha</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 <tr ng-repeat="usuario in Usuarios">
+                     <td class="text-center">{{usuario.nome}}</td>
+                     <td class="text-center">{{usuario.cpf}}</td>
+                     <td class="text-center">{{usuario.email}}</td>
+                     <td class="text-center">{{usuario.senha}}</td>
+                     <td class="text-center" style="width: 200px;">
+                         <a href="#"
+                            data-target="#AtualizarUsuario"
+                            data-toggle="modal" class="btn btn-success"
+                            ng-click="atualizarDados(usuario)">
+                             <span class="glyphicon glyphicon-pencil"></span>
+                         </a>
+                         <a href="#"
+                            data-target="#ExcluirUsuario"
+                            id="btnExcluir"
+                            data-toggle="modal" class="btn btn-danger"
+                            ng-click="excluirDados(usuario)">
+                             <span class="glyphicon glyphicon-trash"></span>
+                         </a>
+                     </td>
+                 </tr>
+             </tbody>
+         </table>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+
+         @* Modal Add Usuario *@
+         <div class="modal" id="AdicionarUsuario" role="dialog">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <h3 class="text-info">Adicionar Usuario</h3>
+                     </div>
+                     <div class="modal-body" style="margin-left:140px;">
+                         <form class="form-horizontal" name="AdicionarNovoUsuarioForm" ng-submit="submitForm(AdicionarNovoUsuarioForm.$valid)">
+                             <div class="form-group">
+
+                                 <input class="form-control" type="text" name="nome" ng-model="nome" ng-minlength="8" ng-maxlength="50" placeholder="Nome" required />
+                                 <p ng-show="AdicionarNovoUsuarioForm.nome.$error.minlength" class="help-block">Nome muito curto.</p>
+                                 <p ng-show="AdicionarNovoUsuarioForm.nome.$error.maxlength" class="help-block">Nome muito longo.</p>
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" type="text" name="cpf" ng-model="cpf" ng-minlength="11" ng-maxlength="11" placeholder="CPF" required />
+                                 <p ng-show="AdicionarNovoUsuarioForm.cpf.$error.minlength" class="help-block">CPF contém 11 digitos.</p>
+                                 <p ng-show="AdicionarNovoUsuarioForm.cpf.$error.maxlength" class="help-block">CPF contém 11 digitos.</p>
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" type="email" name="email" ng-model="email" ng-minlength="15" ng-maxlength="50" placeholder="E-mail" required />
+                                 <p ng-show="AdicionarNovoUsuarioForm.email.$error.minlength" class="help-block">Email muito curto.</p>
+                                 <p ng-show="AdicionarNovoUsuarioForm.email.$error.maxlength" class="help-block">Email muito longo.</p>
+                                 <p ng-show="AdicionarNovoUsuarioForm.email.$error.$invalid && !AdicionarNovoUsuarioForm.email.$pristine" class="help-block">Email inválido.</p>
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" type="text" name="senha" ng-model="senha" ng-minlength="8" ng-maxlength="20" placeholder="Senha" required />
+                                 <p ng-show="AdicionarNovoUsuarioForm.senha.$error.minlength" class="help-block">Senha muito curta.</p>
+                                 <p ng-show="AdicionarNovoUsuarioForm.senha.$error.maxlength" class="help-block">Senha muito longa.</p>
+                             </div>
+
+                         </form>
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-primary" id="btnSalvar" data-dismiss="modal" ng-disabled="AdicionarNovoUsuarioForm.$invalid" ng-click="InsertUsuario()">Adicionar</button>
+                         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="limparDados()">Fechar</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         @* Fim Modal Add Usuário *@
+         @* Modal Atualizar Usuário*@
+         <div class="modal" id="AtualizarUsuario" role="dialog">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <h3 class="text-info">Atualizar Usuário</h3>
+                     </div>
+                     <div class="modal-body" style="margin-left:140px;">
+                         <form class="form-horizontal" name="AtualizarForm">
+                             <div class="form-group">
+                                 <input class="form-control" readonly="readonly" name="cpf" ng-model="AtualizadoUsuarioCPF" type="hidden" placeholder="CPF" />
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" name="nome" ng-model="AtualizadoNome" type="text" ng-minlength="8" ng-maxlength="50" placeholder="Nome" required />
+                                 <p ng-show="AtualizarForm.nome.$error.minlength" class="help-block">Nome muito curto.</p>
+                                 <p ng-show="AtualizarForm.nome.$error.maxlength" class="help-block">Nome muito longo.</p>
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" name="email" ng-model="AtualizadoEmail" type="email" ng-minlength="15" ng-maxlength="50" placeholder="Email" required />
+                                 <p ng-show="AtualizarForm.email.$error.minlength" class="help-block">Email muito curto.</p>
+                                 <p ng-show="AtualizarForm.email.$error.maxlength" class="help-block">Email muito longo.</p>
+                                 <p ng-show="AtualizarForm.email.$error.$invalid && !AdicionarNovoUsuarioForm.email.$pristine" class="help-block">Email inválido.</p>
+                             </div>
+                             <div class="form-group">
+
+                                 <input class="form-control" name="senha" ng-model="AtualizadoSenha" type="text"  ng-minlength="8" ng-maxlength="20" placeholder="Senha" required />
+                                 <p ng-show="AtualizarForm.senha.$error.minlength" class="help-block">Senha muito curta.</p>
+                                 <p ng-show="AtualizarForm.senha.$error.maxlength" class="help-block">Senha muito longa.</p>
+                             </div>
+                         </form>
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-primary" id="btnUpdate" data-dismiss="modal" ng-disabled="AtualizarUsuario.$invalid" ng-click="UpdateUsuario()">
+                             Atualizar
+                         </button>
+                         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         @* Fim Modal Atualizar Usuário *@
+         @* Modal Excluir Usuário *@
+         <div class="modal" role="dialog" id="ExcluirUsuario">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <h3 class="text-info">Você tem certeza que deseja excluir o Usuário?</h3>
+                     </div>
+                     <div class="modal-body" style="margin-right: 140px;">
+                         <div>
+                             <p>CPF: {{UsuarioCPF}}</p>
+                             <p>Nome: {{UsuarioNome}}</p>
+                         </div>
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="DeleteUsuario()">Excluir</button>
+                         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         @* Fim Modal Excluir Usuário *@
+     </div>
+
+
+
+
+    @* Fim panel *@
 </div>
+@section scripts {
+    <script src="~/AngularJs/Usuario/Module.js"></script>
+    <script src="~/AngularJs/Usuario/Service.js"></script>
+    <script src="~/AngularJs/Usuario/Controller.js"></script>
+    }
